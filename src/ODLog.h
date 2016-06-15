@@ -20,9 +20,21 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#import <Foundation/Foundation.h>
+
 /** Logs & Asserts */
 #if DEBUG == 1
-    #define ODLog(fmt, ...) NSLog((@"#[Ln: %d] %s: \n" fmt),  __LINE__, __FUNCTION__, ##__VA_ARGS__); printf("\n")
+    #define __SHORTEN_FILE__ (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : \
+                              strrchr(__FILE__, '\\') ? strrchr(__FILE__, '\\') + 1 : __FILE__)
+
+    #define ODLogWithPrefix(prefix, fmt, ...) \
+    NSLog((prefix @"[%s:%d] %s \n" fmt), __SHORTEN_FILE__, __LINE__, __FUNCTION__, ##__VA_ARGS__); printf("\n")
+
+    #define ODLog(fmt, ...)  ODLogWithPrefix(@"", fmt, ##__VA_ARGS__)
+    #define ODWarn(fmt, ...) ODLogWithPrefix(@"(Warn)", fmt, ##__VA_ARGS__)
+    #define ODFail(fmt, ...) ODLogWithPrefix(@"(Fail)", fmt, ##__VA_ARGS__)
 #else
     #define ODLog
+    #define ODWarn
+    #define ODFail
 #endif
